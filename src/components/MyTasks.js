@@ -19,7 +19,10 @@ const MyTasks = () => {
                 'content-type': 'application/json'
             }
         }).then(res => res.json()).then(data => {
-            console.log(data);
+            if (data.deletedCount) {
+                const remaining = tasks.filter(task => task._id !== id);
+                setTasks(remaining);
+            }
         });
     };
 
