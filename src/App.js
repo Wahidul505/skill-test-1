@@ -1,23 +1,41 @@
-import logo from './logo.svg';
+import { signOut } from 'firebase/auth';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { Link, Route, Routes } from 'react-router-dom';
 import './App.css';
+import Landing from './components/Landing';
+import Login from './components/Login';
+import MyTasks from './components/MyTasks';
+import RequireAuth from './components/RequireAuth';
+import Task from './components/Task';
+import auth from './firebase.init';
 
 function App() {
+  const [user] = useAuthState(auth);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className='header'>
+        <Link to='/'>Home</Link>
+        <Link to='/my-tasks'>My Task</Link>
+        {user ? <button onClick={() => signOut(auth)}>SignOut</button>
+          :
+          <Link to='/login'>Login</Link>
+        }
+      </div>
+      <Routes>
+        <Route path='/' element={<Landing />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/task' element={
+          <RequireAuth>
+            <Task />
+          </RequireAuth>
+        } />
+
+        <Route path='/my-tasks' element={
+          <RequireAuth>
+            <MyTasks />
+          </RequireAuth>
+        } />
+      </Routes>
     </div>
   );
 }
